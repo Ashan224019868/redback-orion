@@ -1,0 +1,31 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'Sonarqube'
+    scannerMode: 'cli'
+    configMode: 'manual'
+    cliProjectKey: 'Ashan224019868_redback-orion_f6ea79e8-2fca-4944-9d70-575fdc5c3aa3'
+    cliProjectName: 'redback-orion-azurepipeline-githubprivaterepo'
+    cliSources: '.'
+
+# Install SonarScanner CLI
+- script: |
+    wget -q -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+    unzip sonar-scanner-cli.zip
+    export PATH=$PATH:$(pwd)/sonar-scanner-5.0.1.3006-linux/bin
+    echo "##vso[task.setvariable variable=SONAR_SCANNER_PATH]$(pwd)/sonar-scanner-5.0.1.3006-linux/bin"
+  displayName: 'Install SonarScanner CLI'
+
+# Run SonarScanner directly without building
+- script: |
+    $(SONAR_SCANNER_PATH)/sonar-scanner \
+      -Dsonar.projectKey=Ashan224019868_redback-orion_f6ea79e8-2fca-4944-9d70-575fdc5c3aa3 \
+      -Dsonar.projectName=redback-orion-azurepipeline-githubprivaterepo \
+      -Dsonar.sources=.
+  displayName: 'Run SonarQube Scanner'
